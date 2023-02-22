@@ -507,3 +507,17 @@ export const updateTripStatus = (req: Request & any, res: Response): void => {
         status: status,
     };
 };
+
+
+export const newTrip = (req: Request & any, res: Response): void => {
+    const trip = new Trip(req.body);
+    const company = req.payload.user.company;
+    trip.company = company;
+    trip.save()
+    .then((newTrip: TripModel) => {
+        res.send(newTrip).end();
+    }).catch( (err:Error) => {
+        res.status(500).send(err)
+    })
+
+}
