@@ -152,10 +152,7 @@ export const getUser = (req: Request & any, res: Response) => {
     User
         .findOne({_id: id})
         .populate("userType")
-        .populate({
-            path: "teams",
-            populate: { path: "teams" }
-        })
+        .populate("userDni")
         .exec()
         .then((user: UserModel) => {
             res.status(200).json(user);
