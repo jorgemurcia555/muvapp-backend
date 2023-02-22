@@ -29,7 +29,7 @@ export const saveLicence = (req: Request & any, res: Response ) => {
 }
 
 export const getLicence = (req: Request & any, res: Response ) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
 
     Licence
     .findById(id)

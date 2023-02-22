@@ -3,6 +3,8 @@ import { Dni, DniModel } from "./../models/Dni";
 import { User, UserModel } from "./../models/User";
 import { Error } from "mongoose";
 
+const mongoose = require("mongoose");
+
 export const saveDni = (req: Request & any, res: Response) => {
     const { front, back } = req.body;
     const newDni = new Dni();
@@ -26,7 +28,7 @@ export const saveDni = (req: Request & any, res: Response) => {
 }
 
 export const getDni = (req:Request & any, res:Response ) => {
-    const { id } = req.params.id;
+    const { id } = req.params;
 
     Dni
     .findById(id)
