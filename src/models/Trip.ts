@@ -2,61 +2,20 @@ import mongoose from "mongoose";
 import { Schema } from "mongoose";
 import { UserModel } from "./User";
 import { CompanyModel } from "./Company";
+import { TransportModel } from "./Transport";
+import { AddressModel } from "./Address";
+
 const AutoIncrement = require("mongoose-sequence")(mongoose);
-
-interface Form {
-  customer: UserModel | string;
-  telephone: string;
-  email: string;
-  code: string;
-  image: string;
-  template: string;
-  fulldate: string;
-  description: string;
-  barcode: string;
-  address: Address;
-
-}
-
 
 export interface Timeline {
   fulldate: string;
-  address?: Address;
+  address?: AddressModel;
   status: string;
   image?: string;
   description?: string;
   user: string;
 
 }
-
-interface Address {
-  name: string;
-  url: string;
-  id: string;
-  lng: number;
-  lat: number;
-}
-
-
-const address = new Schema({
-  name: String,
-  url: String,
-  id: String,
-  lng: Number,
-  lat: Number,
-}, { _id: false });
-
-const form = new Schema({
-  description: String,
-  barcode: String,
-  code: String,
-  email: String,
-  fulldate: String,
-  telephone: String,
-  address: address,
-  customer: { type: Schema.Types.ObjectId, ref: "User", required: true },
-}, { _id : false });
-
 
 const timeline = new Schema({
   description: String,
@@ -68,15 +27,19 @@ const timeline = new Schema({
 }, { _id : false });
 
 export type TripModel = mongoose.Document & {
-  finalStatus: string;
+  code: number;
   status: string;
   type: string;
-  assign: string;
-  route: number;
   time: any;
   markers: any[];
-  pickUp: Form[];
-  agents: UserModel[];
+  spots: number;
+  price: number;
+  addressA:AddressModel;
+  addressB:AddressModel;
+  distance: number;
+  user: UserModel;
+  vehicle: TransportModel;
+  date: string;
   timeline: Timeline[];
   company: CompanyModel;
 };
@@ -84,17 +47,20 @@ export type TripModel = mongoose.Document & {
 
 const TripSchema = new mongoose.Schema<TripModel>({
   code: { type: Number, default: 1},
-  finalStatus: String,
-  assign: { type: String, enum: ["Manual", "Automatico"], default: "Automatico"},
-  type: { type: String, enum: ["Recogida y Entrega", "Viaje"]},
-  route: Number,
+  status: { type: String, enum: ["Sin asignar", "Asignado", "En progreso", "Cancelado", "Fallido", "Completado"], default: "Sin asignar"},
+  type: { type: String, enum: ["Hogar","Oficina", "Otro"]},
   time: Object,
   markers: [Array],
-  pickUp: [form],
+  spots: Number,
+  price: Number,
+  addressA: { type: Schema.Types.ObjectId, ref: "Address", required: [false, "Address is required for trip"] },
+  addressB: { type: Schema.Types.ObjectId, ref: "Address", required: [false, "Address is required for trip"] },
+  distance: Number,
+  date: String,
+  vehicle: {type: Schema.Types.ObjectId, ref: "Transport", required: [false, "Transport is required for trip"]},
   timeline: [timeline],
-  status: { type: String, enum: ["Sin asignar", "Asignado", "En progreso", "Cancelado", "Fallido", "Completado"], default: "Sin asignar"},
   company: { type: Schema.Types.ObjectId, ref: "Company", required: [true, "Company is required for trip"] },
-  agents: [{ type: Schema.Types.ObjectId, ref: "User", required: [false, "Agent is not required"] }],
+  user: { type: Schema.Types.ObjectId, ref: "User", required: [false, "Agent is not required"] },
 }, { timestamps: true });
 
 TripSchema.plugin(AutoIncrement, { id: "trip_code", inc_field: "code", reference_fields: ["company"] });
