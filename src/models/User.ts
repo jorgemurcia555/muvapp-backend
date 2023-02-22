@@ -2,6 +2,8 @@ import { UserTypeModel } from "./UserType";
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 import { CompanyModel } from "./Company";
+import { LicenceModel } from "./Licence";
+import { DniModel } from "./Dni";
 interface Preferences {
   timezone: string;
   intro: boolean;
@@ -34,6 +36,8 @@ export type UserModel = mongoose.Document & {
     language: string
   },
   userType: UserTypeModel,
+  userLicence: LicenceModel,
+  userDni: DniModel,
   hash: string,
   appCode: string,
   telephone: string,
@@ -86,6 +90,8 @@ const userSchema = new mongoose.Schema<UserModel>({
   enabled: { type: Boolean, default: true },
   appCode: { type: String, match: [new RegExp("[a-z0-9]{5}"), "appCode doesn't match a valid pattern"], required: [false, "appCode is required for user"] },
   userType: { type: Schema.Types.ObjectId, ref: "UserType", required: [true, "User type is required for user"] },
+  userLicence: { type: Schema.Types.ObjectId, ref: "Licence"},
+  userDni: { type: Schema.Types.ObjectId, ref: "Dni"},
   preferences: {
     timezone: { type: String, default: "America/Tegucigalpa" },
     allCustomers: { type: Boolean, default: false },
@@ -112,7 +118,6 @@ const userSchema = new mongoose.Schema<UserModel>({
       website: String,
       picture: String
   },
-  teams: [{ type: Schema.Types.ObjectId, ref: "Team" }],
   vehicle: Object,
   // status: userStatusSchema,
   status: { type: String, enum: ["Libre", "Ocupado", "Inactivo"], default: "Libre"},
