@@ -2,14 +2,11 @@ import { Request, Response } from "express";
 import { Dni, DniModel } from "./../models/Dni";
 import { User, UserModel } from "./../models/User";
 import { Error } from "mongoose";
-
-const mongoose = require("mongoose");
-
 export const saveDni = (req: Request & any, res: Response) => {
-    const { front, back } = req.body;
+    const { frontDni, backDni } = req.body;
     const newDni = new Dni();
-    newDni.frontDni = front;
-    newDni.backDni = back;
+    newDni.frontDni = frontDni;
+    newDni.backDni = backDni;
 
     newDni
     .save()

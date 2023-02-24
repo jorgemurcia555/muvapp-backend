@@ -6,11 +6,11 @@ import { Request, Response } from 'express';
 
 export const saveLicence = (req: Request & any, res: Response ) => {
 
-    const {front, back} = req.body
+    const {frontLicence, backLicence} = req.body
 
     const newLicence = new Licence();
-    newLicence.frontLicence = front;
-    newLicence.backLicence = back;
+    newLicence.frontLicence = frontLicence;
+    newLicence.backLicence = backLicence;
 
     newLicence
     .save()

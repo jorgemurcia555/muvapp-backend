@@ -17,6 +17,6 @@ router.use("/geo-fence", GeoFenceRouter);
 router.use("/companies", CompanyRouter);
 router.use("/trip", TripRouter);
 router.use("/dni", DniRouter);
-router.use('/licence', LicenceRouter);
+router.use("/licence", LicenceRouter);
 
 export = router;

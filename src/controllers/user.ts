@@ -153,6 +153,7 @@ export const getUser = (req: Request & any, res: Response) => {
         .findOne({_id: id})
         .populate("userType")
         .populate("userDni")
+        .populate("userLicence")
         .exec()
         .then((user: UserModel) => {
             res.status(200).json(user);
