@@ -154,6 +154,10 @@ export const getUser = (req: Request & any, res: Response) => {
         .populate("userType")
         .populate("userDni")
         .populate("userLicence")
+        .populate({
+            path: "address",
+            populate: { path: "address"}
+        })
         .exec()
         .then((user: UserModel) => {
             res.status(200).json(user);
