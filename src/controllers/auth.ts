@@ -55,7 +55,7 @@ export const logout = (req: Request, res: Response, next: NextFunction) => {
     }
 
 };
-export const login = (req: Request, res: Response, next: NextFunction) => {
+export const    login = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("local.signin", (err: any, user: UserModel, info: any) => {
         if (err) {
             winston.error("/users/login", { error: err });
@@ -157,13 +157,13 @@ export const registerAgent = (req: Request & any, res: Response) => {
 
             })
             .then((userType: UserTypeModel) => {
-                const company = req.payload.user.company;
+                // const company = req.payload.user.company;
                 const user = Object.assign(req.body, {
                     email:email,
                     password: encryptPassword,
                     salt: newSalt,
                     userType: userType,
-                    company
+                    // company
                 });
                 User.create(user).then((user) => {
                     winston.info("/users/generateAgentUser", { status: 200 });
