@@ -21,6 +21,4 @@ const AddressSchema = new Schema<AddressModel>({
     enabled: { type: Boolean, default: true },
 }, { timestamps: true });
 
-const Address = model<AddressModel>("Address", AddressSchema);
-
-export default Address;
+export const Address = model<AddressModel>("Address", AddressSchema);
