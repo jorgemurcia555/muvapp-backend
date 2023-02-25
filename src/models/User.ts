@@ -27,7 +27,7 @@ export type UserModel = mongoose.Document & {
   firstName: string,
   image: string,
   lastName: string,
-  address: Address,
+  address: [any],
   enabled: boolean,
   deviceToken: string,
   preferences: {
@@ -73,18 +73,11 @@ export interface AuthToken {
     kind: string;
 }
 
-interface Address {
-  name: string;
-  lat: number;
-  lng: number;
-  url: string;
-  _id: string;
-}
 
 const userSchema = new mongoose.Schema<UserModel>({
   firstName: String,
   lastName: String,
-  address: { type: Object, ref: "Address" },
+  address: [{ type:  Schema.Types.ObjectId, ref: "Address" }],
   image: String,
   deviceToken: { type: String, required: false },
   enabled: { type: Boolean, default: true },
@@ -98,7 +91,7 @@ const userSchema = new mongoose.Schema<UserModel>({
     language: { type: String, default: "en" },
     intro: { type: Boolean, default: true }
   },
-  telephone: String,
+  telephone: { type: String, required: true},
   email: { type: String, lowercase: true, unique: true, required: false },
   hash: String,
   password: String,
