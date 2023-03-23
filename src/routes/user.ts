@@ -4,12 +4,14 @@ import {
     getUsersPerType,
     createManager,
     createAgent,
+    getAddress,
     createCustomer,
     updateUser,
     changeAgentStatus,
     createRoot,
     getUser,
-    getUsersPerTeam
+    getUsersPerTeam,
+    getTransports
 } from "../controllers/user";
 
 const UserRouter = Router();
@@ -17,6 +19,8 @@ UserRouter.post("/new-root", createRoot);
 UserRouter.post("/new-manager", createManager);
 UserRouter.post("/new-agent", registerAgent);
 UserRouter.post("/new-customer", createCustomer);
+UserRouter.get("/list-transports", getTransports);
+UserRouter.get("/list-address", getAddress);
 UserRouter.get("/list-per-type/:type", getUsersPerType);
 UserRouter.get("/list-per-team/:id/:type", getUsersPerTeam);
 UserRouter.get("/:id", getUser);
