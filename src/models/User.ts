@@ -64,7 +64,7 @@ export type UserModel = mongoose.Document & {
   intro: boolean,
   // status: UserStatusModel;
   status: string;
-  vehicle: VehicleModel,
+  vehicle: [any],
   company: CompanyModel,
 };
 
@@ -111,7 +111,7 @@ const userSchema = new mongoose.Schema<UserModel>({
       website: String,
       picture: String
   },
-  vehicle: Object,
+  vehicle: [{ type:  Schema.Types.ObjectId, ref: "Transport" }],
   // status: userStatusSchema,
   status: { type: String, enum: ["Libre", "Ocupado", "Inactivo"], default: "Libre"},
   company: { type: Schema.Types.ObjectId, ref: "Company", required: [true, "Company is required for template"] },

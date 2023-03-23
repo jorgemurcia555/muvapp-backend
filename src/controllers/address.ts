@@ -6,11 +6,15 @@ import { Error } from 'mongoose';
 const mongoose = require('mongoose');
 
 export const createAddress = (req: Request & any, res: Response) => {
-    const { name } = req.body ;
-    console.log(req.payload.user._id);
+    const { name, referenceSignal, type, lng, lat } = req.body ;
+    // console.dir(req.body);
     
     const newAddress = new Address();
     newAddress.name = name;
+    newAddress.referenceSignal = referenceSignal;
+    newAddress.type = type;
+    newAddress.lng = lng;
+    newAddress.lat = lat;
 
     newAddress
     .save()
@@ -29,6 +33,19 @@ export const createAddress = (req: Request & any, res: Response) => {
     .catch((error: Error) =>{
         res.status(500).json({error, msj: 'Server error address'}).end()
     })
-
+    
 }
 
+export const updateState = (req: Request, res: Response) => {
+    const { id } = req.params;
+    
+    Address.updateOne({_id: id}, { enabled: false })
+    .exec()
+    .then((addressResult:AddressModel) => {
+        res.status(200).send(addressResult).end();
+    })
+    .catch((error: Error) => {
+        res.status(500).json({error, msj: 'Server error address'}).end();
+    })
+
+}

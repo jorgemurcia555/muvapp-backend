@@ -3,30 +3,34 @@ import { Document, model, Schema } from "mongoose";
 
 export type TransportModel = Document & {
     type: string,
+    brand: string,
+    model: string,
+    color: string,
+    license_plate: string,
     spots: {
         seats: number,
         trunk: number,
         bodywork: number,
     },
-    brand: string,
-    model: string,
-    color: string,
-    license_plate: string,
+    additionals: string,
     observations: string,
+    img:string,
     enabled: boolean,
 };
 
 const TransportSchema = new Schema<TransportModel>({
-    type: String,
-    spots: Object,
     brand: String,
     model: String,
     color: String,
     license_plate: String,
+    spots: Object,
+    additionals: String,
     observations: String,
+    img: String,
+    type: String,
     enabled: { type: Boolean, default: true },
 }, { timestamps: true });
 
-const Transport = model<TransportModel>("Transport", TransportSchema);
+export const Transport = model<TransportModel>("Transport", TransportSchema);
 
-export default Transport;
+// export default Transport;

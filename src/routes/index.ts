@@ -8,6 +8,7 @@ import TripRouter from "./trip";
 import DniRouter from "./dni";
 import LicenceRouter from "./licence";
 import AddressRouter from "./address";
+import TransportRouter from "./transport";
 
 const router = Router();
 
@@ -20,4 +21,5 @@ router.use("/trip", TripRouter);
 router.use("/dni", DniRouter);
 router.use("/licence", LicenceRouter);
 router.use("/address", AddressRouter);
+router.use("/transport", TransportRouter);
 export = router;

@@ -234,3 +234,36 @@ export const changeAgentStatus = (req: Request & any, res: Response ) => {
         })
         .catch((err) => res.status(500).json({err, message: "Error al cambiar estado del agente"}));
 };
+
+
+export const getAddress = (req: Request & any, res: Response) => {
+
+    User
+        .findOne({_id: req.payload.user._id})
+        .populate({
+            path: "address",
+            populate: { path: "address"}
+        })
+        .then((user: UserModel) => {
+            res.status(200).json(user.address);
+        })
+        .catch((err: any) => {
+            res.status(500).json({ message: "Error al obtener las direcciones del usuario", err: err });
+        });
+}
+
+export const getTransports = (req: Request & any, res: Response) => {
+
+    User
+        .findOne({_id: req.payload.user._id})
+        .populate({
+            path: "vehicle",
+            populate: { path: "vehicle"}
+        })
+        .then((user: UserModel) => {
+            res.status(200).json(user.vehicle);
+        })
+        .catch((err: any) => {
+            res.status(500).json({ message: "Error al obtener los transportes del usuario", err: err });
+        });
+}
