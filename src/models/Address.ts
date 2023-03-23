@@ -1,9 +1,11 @@
 
 import { Document, model, Schema } from "mongoose";
+const mongoose = require("mongoose");
+
 
 export type AddressModel = Document & {
     type: string;
-    category: string;
+    referenceSignal: string;
     enabled: boolean;
     name: string;
     url: string;
@@ -12,12 +14,12 @@ export type AddressModel = Document & {
 };
 
 const AddressSchema = new Schema<AddressModel>({
-    type: String,
-    category: String,
-    name: String,
+    type: { type: String, default: true },
+    referenceSignal: { type: String, default: true },
+    name: { type: String, default: true },
     url: String,
-    lng: Number,
-    lat: Number,
+    lng: { type: mongoose.Types.Decimal128, default: true },
+    lat: { type: mongoose.Types.Decimal128, default: true },
     enabled: { type: Boolean, default: true },
 }, { timestamps: true });
 
