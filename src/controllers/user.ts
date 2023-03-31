@@ -1,3 +1,4 @@
+import {Address} from './../models/Address';
 import { Request, Response } from "express";
 import { Error } from "mongoose";
 import winston from "winston";
@@ -261,9 +262,32 @@ export const getTransports = (req: Request & any, res: Response) => {
             populate: { path: "vehicle"}
         })
         .then((user: UserModel) => {
-            res.status(200).json(user.vehicle);
+            res.status(200).json(user.vehicle).end();
         })
         .catch((err: any) => {
-            res.status(500).json({ message: "Error al obtener los transportes del usuario", err: err });
+            res.status(500).json({ message: "Error al obtener los transportes del usuario", err: err }).end();
+        });
+}
+export const getMyTrips = (req: Request & any, res: Response) => {
+
+    User
+        .findOne({_id: req.payload.user._id})
+        .populate({
+            path: "trips",
+            populate: { path: "trips"}
+        })
+        .populate({
+            path: 'trips',
+            populate: { path: 'addressA'}
+        })
+        .populate({
+            path: 'trips',
+            populate: { path: 'addressB'}
+        })
+        .then((user: UserModel) => {
+            res.status(200).json(user.trips).end();
+        })
+        .catch((err: any) => {
+            res.status(500).json({ message: "Error al obtener los transportes del usuario", err: err }).end();
         });
 }
