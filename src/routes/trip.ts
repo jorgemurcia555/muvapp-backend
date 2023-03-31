@@ -17,14 +17,21 @@ import {
     expoToken,
     tripMessage,
     testIO,
-    newTrip
+    newTrip,
+    getAllTrips,
+    getTripsAgent,
+    newTripAgent
 } from "../controllers/Trip";
 
 const TripRouter = Router();
 
 TripRouter.post("/new", createTrip);
+TripRouter.post("/newTripAgent", newTripAgent);
 TripRouter.post("/newTrip", newTrip);
 
+
+TripRouter.get("/list-trip-agent", getTripsAgent);
+TripRouter.get("/list-all", getAllTrips);
 TripRouter.get("/test-io", testIO);
 TripRouter.get("/list", getTrips);
 TripRouter.get("/list-filtered", getFilteredTrips);

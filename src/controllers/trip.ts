@@ -9,7 +9,7 @@ const { Expo } = require("expo-server-sdk");
 const expo = new Expo();
 
 const moment = require("moment");
-
+const mongoose = require('mongoose')
 // eslint-disable-next-line prefer-const
 let savedPushTokens: any[] = [];
 
@@ -510,14 +510,96 @@ export const updateTripStatus = (req: Request & any, res: Response): void => {
 
 
 export const newTrip = (req: Request & any, res: Response): void => {
-    const trip = new Trip(req.body);
+    const timeLine = {
+        fulldate: new Date(),
+        description: "Tarea creada",
+        status: "Creado",
+        user: req.payload.user._id
+    };
+    const preTrip = req.body;
+    preTrip["timeline"] = [timeLine];
+
+    const trip = new Trip(preTrip);
     const company = req.payload.user.company;
     trip.company = company;
-    trip.save()
+    trip
+    .save()
     .then((newTrip: TripModel) => {
-        res.send(newTrip).end();
+        const idTrip = new mongoose.Types.ObjectId(newTrip._id)
+        User.updateOne({_id: req.payload.user._id}, {$push: { trips: [idTrip]}})
+        .then((userUpdate: UserModel) => {
+            res.status(200).send(newTrip).end();
+        })
+        .catch((err:Error) => {
+            res.status(500).send(err).end()
+        })
     }).catch( (err:Error) => {
-        res.status(500).send(err)
+        res.status(500).send(err).end()
+    })
+
+}
+
+export const getAllTrips = (req: Request & any, res: Response): void => {
+    Trip
+        .find({status: 'Sin asignar'})
+        .populate('addressA')
+        .populate('addressB')
+        .populate({
+            path: "timeline",
+            populate: { path: "user" }
+        })
+        .exec()
+        .then( (tripsResult: TripModel[]) => {
+            res.status(200).send(tripsResult).end();
+        })
+        .catch( error => {
+            res.status(500).send({error}).end();
+        })
+        
+}
+
+export const getTripsAgent = (req: Request & any, res: Response): void => {
+    Trip
+        .find({status: 'Asignado'})
+        .populate('addressA')
+        .populate('addressB')
+        .populate('user')
+        .populate({
+            path: "timeline",
+            populate: { path: "user" }
+        })
+        .exec()
+        .then( (tripsResult: TripModel[]) => {
+            res.status(200).send(tripsResult).end();
+        })
+        .catch( error => {
+            res.status(500).send({error}).end();
+        })
+        
+}
+
+export const newTripAgent = (req: Request & any, res: Response): void => {
+
+    const company = req.payload.user.company;
+    const idUser = new mongoose.Types.ObjectId(req.payload.user._id)
+    const trip = new Trip(req.body);
+    trip.company = company;
+    trip.status = "Asignado";
+    trip.user = idUser
+
+    trip
+    .save()
+    .then((newTrip: TripModel) => {
+        const idTrip = new mongoose.Types.ObjectId(newTrip._id)
+        User.updateOne({_id: req.payload.user._id}, {$push: { trips: [idTrip]}})
+        .then((userUpdate: UserModel) => {
+            res.status(200).send(newTrip).end();
+        })
+        .catch((err:Error) => {
+            res.status(500).send(err).end()
+        })
+    }).catch( (err:Error) => {
+        res.status(500).send(err).end()
     })
 
 }
