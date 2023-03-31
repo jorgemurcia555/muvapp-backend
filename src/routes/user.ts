@@ -1,3 +1,4 @@
+import {getMyTrips} from './../controllers/user';
 import { Router } from "express";
 import { registerAgent } from "../controllers/auth";
 import {
@@ -19,6 +20,7 @@ UserRouter.post("/new-root", createRoot);
 UserRouter.post("/new-manager", createManager);
 UserRouter.post("/new-agent", registerAgent);
 UserRouter.post("/new-customer", createCustomer);
+UserRouter.get("/list-trips", getMyTrips);
 UserRouter.get("/list-transports", getTransports);
 UserRouter.get("/list-address", getAddress);
 UserRouter.get("/list-per-type/:type", getUsersPerType);
