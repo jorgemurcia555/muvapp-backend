@@ -20,8 +20,9 @@ import {
     newTrip,
     getAllTrips,
     getTripsAgent,
-    newTripAgent
-} from "../controllers/Trip";
+    newTripAgent,
+    updateAssingAgent
+} from "../controllers/trip";
 
 const TripRouter = Router();
 
@@ -42,6 +43,7 @@ TripRouter.get("/list-per-status/:status", getTripByStatus);
 TripRouter.get("/count-per-status", getCoutByStatus);
 TripRouter.get("/:id", getTrip);
 
+TripRouter.put("/assingAgent/:id", updateAssingAgent)
 TripRouter.put("/expo-token", expoToken);
 TripRouter.put("/expo-message", tripMessage);
 

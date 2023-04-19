@@ -44,6 +44,7 @@ export type UserModel = mongoose.Document & {
   email: string,
   password: string,
   salt: string,
+  activeSession: Boolean,
   authData: {
     facebookId: string,
     accessToken: string,
@@ -99,7 +100,7 @@ const userSchema = new mongoose.Schema<UserModel>({
   salt: String,
   passwordResetToken: String,
   passwordResetExpires: Date,
-    
+  activeSession: { type: Boolean, default: false },
   facebook: String,
   twitter: String,
   google: String,

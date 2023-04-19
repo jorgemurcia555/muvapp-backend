@@ -1,4 +1,3 @@
-import {Address} from './../models/Address';
 import { Request, Response } from "express";
 import { Error } from "mongoose";
 import winston from "winston";
@@ -290,4 +289,16 @@ export const getMyTrips = (req: Request & any, res: Response) => {
         .catch((err: any) => {
             res.status(500).json({ message: "Error al obtener los transportes del usuario", err: err }).end();
         });
+}
+
+export const getUsersActiveSession = ( req: Request & any, res: Response) => {
+    User
+        .find({ activeSession: true })
+        .populate('company')
+        .then((usersFind: UserModel[]) => {
+            res.status(200).send(usersFind).end()
+        })
+        .catch((error: any) => {
+            res.status(500).send({error}).end()
+        })
 }

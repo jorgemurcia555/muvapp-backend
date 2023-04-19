@@ -354,7 +354,7 @@ export const getPerAgent = (req: Request & any, res: Response): void => {
         .catch((err: any) => res.status(500).json({ error: err }));
 };
 
-export const getTrip = (req: Request, res: Response, next: NextFunction): void => {
+export const getMyTrip = (req: Request, res: Response, next: NextFunction): void => {
 
     const id = req.params.id;
 
@@ -601,5 +601,44 @@ export const newTripAgent = (req: Request & any, res: Response): void => {
     }).catch( (err:Error) => {
         res.status(500).send(err).end()
     })
+
+}
+
+export const updateAssingAgent = (req: Request, res: Response) => {
+
+    const { id } = req.params
+    const trip = {...req.body, status: 'Asignado'}
+
+    Trip
+    .updateOne({ _id: id }, trip, { new: true })
+    .exec()
+    .then((updateTrip: TripModel) => {
+        res.status(200).json( {updateTrip} ).end();
+    })
+    .catch(err => res.status(500).json({ error: err, message: "Error al actualizar tarea" }).end());
+
+}
+
+export const getTrip = (req: Request, res: Response) => {
+    const { id } = req.params
+
+    Trip
+        .findById(id)
+        .populate('addressA')
+        .populate('addressB')
+        .populate('user')
+        .populate('company')
+        .populate('vehicle')
+        .populate({
+            path: "timeline",
+            populate: { path: "user" }
+        })
+        .exec()
+        .then((trip: TripModel) => {
+            res.status(200).send(trip).end();
+        })
+        .catch((err: Error) => {
+            res.status(500).json({ error: "server_error" }).end();
+        });
 
 }
