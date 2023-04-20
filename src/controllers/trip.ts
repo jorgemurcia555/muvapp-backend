@@ -604,7 +604,7 @@ export const newTripAgent = (req: Request & any, res: Response): void => {
 
 }
 
-export const updateAssingAgent = (req: Request, res: Response) => {
+export const updateAssingAgent = (req: Request & any, res: Response) => {
 
     const { id } = req.params
     const trip = {...req.body, status: 'Asignado'}
@@ -613,6 +613,14 @@ export const updateAssingAgent = (req: Request, res: Response) => {
     .updateOne({ _id: id }, trip, { new: true })
     .exec()
     .then((updateTrip: TripModel) => {
+        const idTrip = new mongoose.Types.ObjectId(updateTrip._id)
+        User.updateOne({_id: req.payload.user._id}, {status: 'Ocupado', $push: { trips: [idTrip]}})
+        .then((userUpdate: UserModel) => {
+            res.status(200).send(updateTrip).end();
+        })
+        .catch((err:Error) => {
+            res.status(500).send(err).end()
+        })
         res.status(200).json( {updateTrip} ).end();
     })
     .catch(err => res.status(500).json({ error: err, message: "Error al actualizar tarea" }).end());
