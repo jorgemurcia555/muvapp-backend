@@ -293,7 +293,7 @@ export const getMyTrips = (req: Request & any, res: Response) => {
 
 export const getUsersActiveSession = ( req: Request & any, res: Response) => {
     User
-        .find({ activeSession: true })
+        .find({ status: 'Libre' },{ company:1 , address:1, email: 1, firstName:1, lastName:1, status:1, image:1, vehicle:1 })
         .populate('company')
         .then((usersFind: UserModel[]) => {
             res.status(200).send(usersFind).end()

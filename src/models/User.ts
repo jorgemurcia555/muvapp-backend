@@ -100,7 +100,6 @@ const userSchema = new mongoose.Schema<UserModel>({
   salt: String,
   passwordResetToken: String,
   passwordResetExpires: Date,
-  activeSession: { type: Boolean, default: false },
   facebook: String,
   twitter: String,
   google: String,
@@ -116,7 +115,7 @@ const userSchema = new mongoose.Schema<UserModel>({
   trips: [{ type:  Schema.Types.ObjectId, ref: "Trip" }],
   vehicle: [{ type:  Schema.Types.ObjectId, ref: "Transport" }],
   // status: userStatusSchema,
-  status: { type: String, enum: ["Libre", "Ocupado", "Inactivo"], default: "Libre"},
+  status: { type: String, enum: ["Libre","Solicitado", "Ocupado", "Inactivo"], default: "Libre"},
   company: { type: Schema.Types.ObjectId, ref: "Company", required: [true, "Company is required for template"] },
 }, { timestamps: true });
 
