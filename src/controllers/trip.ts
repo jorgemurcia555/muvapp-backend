@@ -5,6 +5,7 @@ import winston from "winston";
 import { getIOConnection } from "../helpers/io";
 import { groupBy, pick } from "lodash";
 import * as _ from "lodash";
+import { Error } from "mongoose";
 const { Expo } = require("expo-server-sdk");
 const expo = new Expo();
 
@@ -381,22 +382,22 @@ export const removeTrip = (req: Request, res: Response, next: NextFunction): voi
 export const tripUpdate = (req: Request & any, res: Response): void => {
 
     const tripId = req.params.id;
-    const user = req.payload.user;
+    // const user = req.payload.user;
     const trip = req.body;
-    const io = getIOConnection();
+    // const io = getIOConnection();
 
-    const timeline: Timeline = {
-        fulldate: new Date().toString(),
-        status: "Actualizado",
-        description: "Actualizado por administrador",
-        user: user._id,
-    };
-    trip.timeline = trip.timeline.concat(timeline);
+    // const timeline: Timeline = {
+    //     fulldate: new Date().toString(),
+    //     status: "Actualizado",
+    //     description: "Actualizado por administrador",
+    //     user: user._id,
+    // };
+    // trip.timeline = trip.timeline.concat(timeline);
     Trip
         .updateOne({ _id: tripId }, trip, { new: true })
         .exec()
         .then((updateTrip: TripModel) => {
-            io.emit("updatedTrip", "success");
+            // io.emit("updatedTrip", "success");
             res.status(200).json( updateTrip );
         })
         .catch(err => res.status(500).json({ error: err, message: "Error al actualizar tarea" }).end());
@@ -631,10 +632,10 @@ export const getTrip = (req: Request, res: Response) => {
     const { id } = req.params
 
     Trip
-        .findById(id)
+        .findById(id, {code:0,createdAt:0,updatedAt:0})
         .populate('addressA')
         .populate('addressB')
-        .populate('user')
+        .populate('user',['-preferences','-trips','-salt','-password','-updatedAt','-createdAt'])
         .populate('company')
         .populate('vehicle')
         .populate({
@@ -648,5 +649,30 @@ export const getTrip = (req: Request, res: Response) => {
         .catch((err: Error) => {
             res.status(500).json({ error: "server_error" }).end();
         });
+
+}
+
+export const searchTrip = (req: Request, res: Response) => {
+    const { idUser } = req.params
+    const id = new mongoose.Types.ObjectId(idUser)
+
+    Trip
+    .findOne({user: id, status: 'Asignado'})
+    .populate('addressA')
+    .populate('addressB')
+    .populate('user',['-preferences','-trips','-salt','-password','-updatedAt','-createdAt'])
+    .populate('company')
+    .populate('vehicle')
+    .populate({
+        path: "timeline",
+        populate: { path: "user" }
+    })
+    .exec()
+    .then( (tripFind: TripModel) => {
+        res.status(200).send(tripFind);
+    })
+    .catch( (error: Error) => {
+        res.status(500).send({result: false, error})
+    })
 
 }

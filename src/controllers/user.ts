@@ -150,7 +150,7 @@ export const createCustomer = (req: Request & any, res: Response) => {
 export const getUser = (req: Request & any, res: Response) => {
     const id = req.params.id;
     User
-        .findOne({_id: id})
+        .findOne({_id: id},{ preferences:0,password:0,salt:0,updatedAt:0,createdAt:0 })
         .populate("userType")
         .populate("userDni")
         .populate("userLicence")
@@ -166,6 +166,7 @@ export const getUser = (req: Request & any, res: Response) => {
             res.status(500).json({ message: "Error al devolver usuarios por tipos", err: err });
         });
 };
+
 export const getUsersPerType = (req: Request & any, res: Response) => {
     const type = Number(req.params.type);
     const company = req.payload.user.company;
