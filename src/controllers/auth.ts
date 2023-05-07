@@ -79,6 +79,7 @@ export const loginMobile = (req: Request, res: Response, next: NextFunction) => 
         if (!user) {
             return res.send("Usuario o contraseña incorrecta");
         }
+        user.image = ''
         crypto.pbkdf2(password, user.salt, 10000, 64, "sha1", (err, key) => {
             const encryptPassword = key.toString("base64");
             const signToken = (user: any) => {
