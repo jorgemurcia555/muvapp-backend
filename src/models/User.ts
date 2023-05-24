@@ -59,7 +59,7 @@ export type UserModel = mongoose.Document & {
   },
   passwordResetToken: string,
   passwordResetExpires: Date,
-
+  idSocket: string,
   facebook: string,
   tokens: AuthToken[],
   intro: boolean,
@@ -104,7 +104,7 @@ const userSchema = new mongoose.Schema<UserModel>({
   twitter: String,
   google: String,
   tokens: Array,
-
+  idSocket: String,
   profile: {
       name: String,
       gender: String,
