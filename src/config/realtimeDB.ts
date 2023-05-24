@@ -6,13 +6,15 @@ const jwt = require("jsonwebtoken");
 import server from "../server";
 const io: Server = new Server(server, {
     cors: {
-      origin: "*",
+      origin: true,
+      credentials: true,
+      methods: ['GET', 'POST']
     }
 });
 
-io.use((socket: any, next: NextFunction) => {
-    console.log("IN USE CONNECTION");
-    next();
+// io.use((socket: any, next: NextFunction) => {
+    // console.log("IN USE CONNECTION");
+    // next();
     /* if (socket.handshake.query && socket.handshake.query.token){
       jwt.verify(socket.handshake.query.token, process.env.SECRET_KEY, (err: any, decoded: any) => {
         if (err) return next(new Error("Authentication error"));
@@ -23,13 +25,30 @@ io.use((socket: any, next: NextFunction) => {
     else {
       next(new Error("Authentication error"));
     }     */
-});
+// });
 
 // * -----------------------------  E V E N T O S ---------------------------
 io.on("connection", (socket: Socket) => {
     console.log("\n-------------------------------------------------------");
     console.log("SOCKET IO SUCCESS CONNECTION SUCCESS: ", socket.id);
     console.log("--------------------------------------------------------\n");
+    
+    socket.emit('id-socket', socket.id)
+    
+    socket.on('request-trip', (id) => {
+        socket.broadcast.to(id).emit('new-request-trip')
+    })
+    
+    socket.on('accept-trip', (id) => {
+        socket.broadcast.to(id).emit('accept-trip')
+    })
+
+    socket.on("disconnect", (err: any) => {
+        console.log("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        console.log("SOCKET IO DISCONNECT CONNECTION SUCCESS: ", socket.id);
+        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
+        socket.broadcast.emit('user-disconnect' )
+    })
 });
 
 io.on("error", (err: any) => {
