@@ -19,6 +19,7 @@ type Message = {
   body: string;
 };
 
+
 const handlePushTokens = (message: Message)  => {
   const notifications = [];
   for (const pushToken of savedPushTokens) {
@@ -617,12 +618,12 @@ export const updateAssingAgent = (req: Request & any, res: Response) => {
         const idTrip = new mongoose.Types.ObjectId(updateTrip._id)
         User.updateOne({_id: req.payload.user._id}, {status: 'Ocupado', $push: { trips: [idTrip]}})
         .then((userUpdate: UserModel) => {
-            res.status(200).send(updateTrip).end();
+
+            res.status(200).json({ updateTrip }).end();
         })
         .catch((err:Error) => {
-            res.status(500).send(err).end()
+            res.status(500).send(err).end();
         })
-        res.status(200).json( {updateTrip} ).end();
     })
     .catch(err => res.status(500).json({ error: err, message: "Error al actualizar tarea" }).end());
 
