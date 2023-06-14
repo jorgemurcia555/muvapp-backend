@@ -1,7 +1,7 @@
+import { User } from './../models/User';
 import { NextFunction } from "express";
 import { Server, Socket } from "socket.io";
 import { setIOConnection } from "../helpers/io";
-
 const jwt = require("jsonwebtoken");
 import server from "../server";
 const io: Server = new Server(server, {
@@ -40,14 +40,18 @@ io.on("connection", (socket: Socket) => {
     })
     
     socket.on('accept-trip', (id) => {
-        socket.broadcast.to(id).emit('accept-trip')
+        socket.broadcast.to(id).emit('accept-trip-agent')
     })
 
     socket.on("disconnect", (err: any) => {
         console.log("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         console.log("SOCKET IO DISCONNECT CONNECTION SUCCESS: ", socket.id);
         console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
-        socket.broadcast.emit('user-disconnect' )
+
+        User.find({ idSocket: socket.id },{idSocket: ''})
+        .then( res => {
+            socket.broadcast.emit('user-disconnect' )
+        })
     })
 });
 
