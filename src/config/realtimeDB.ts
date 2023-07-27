@@ -35,12 +35,24 @@ io.on("connection", (socket: Socket) => {
     
     socket.emit('id-socket', socket.id)
     
-    socket.on('request-trip', (id) => {
-        socket.broadcast.to(id).emit('new-request-trip')
+    socket.on('request-trip', (data) => {
+        socket.broadcast.to(data.idSocket).emit('request-trip', data.idTrip)
     })
     
-    socket.on('accept-trip', (id) => {
-        socket.broadcast.to(id).emit('accept-trip-agent')
+    socket.on('accept-trip', (data) => {
+        socket.broadcast.to(data.idSocket).emit('accept-trip', data.result)
+    })
+
+    socket.on('up-client', (id) => {
+        socket.broadcast.to(id).emit('confirm-up-client')
+    })
+
+    socket.on('confirm-up', (id) => {
+        socket.broadcast.to(id).emit('confirm-up')
+    })
+
+    socket.on('down-client', (id) => {
+        socket.broadcast.to(id).emit('down-client')
     })
 
     socket.on("disconnect", (err: any) => {
