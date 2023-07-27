@@ -618,7 +618,6 @@ export const updateAssingAgent = (req: Request & any, res: Response) => {
         const idTrip = new mongoose.Types.ObjectId(updateTrip._id)
         User.updateOne({_id: req.payload.user._id}, {status: 'Ocupado', $push: { trips: [idTrip]}})
         .then((userUpdate: UserModel) => {
-
             res.status(200).json({ updateTrip }).end();
         })
         .catch((err:Error) => {
@@ -650,30 +649,5 @@ export const getTrip = (req: Request, res: Response) => {
         .catch((err: Error) => {
             res.status(500).json({ error: "server_error" }).end();
         });
-
-}
-
-export const searchTrip = (req: Request, res: Response) => {
-    const { idUser } = req.params
-    const id = new mongoose.Types.ObjectId(idUser)
-
-    Trip
-    .findOne({user: id, status: 'Asignado'})
-    .populate('addressA')
-    .populate('addressB')
-    .populate('user',['-preferences','-trips','-salt','-password','-updatedAt','-createdAt'])
-    .populate('company')
-    .populate('vehicle')
-    .populate({
-        path: "timeline",
-        populate: { path: "user" }
-    })
-    .exec()
-    .then( (tripFind: TripModel) => {
-        res.status(200).send(tripFind);
-    })
-    .catch( (error: Error) => {
-        res.status(500).send({result: false, error})
-    })
 
 }
