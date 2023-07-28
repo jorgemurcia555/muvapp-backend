@@ -208,13 +208,19 @@ export const getUsersPerTeam = (req: Request & any, res: Response) => {
 
 export const updateUser = (req: Response & any, res: Response) => {
     const user = new mongoose.Types.ObjectId(req.params.id);
+    const io = getIOConnection();
     const updateFields = req.body;
 
     User
         .updateOne({ _id: user }, updateFields, { new: true })
         .exec()
         .then((user: UserModel) => {
-            res.status(200).json( user );
+
+            !!req.body.idSocket && (io.emit('new-agent', req.body.idSocket))
+            
+            !!req.body.status && ( req.body.status == 'Inactivo' && (io.emit('user-disconnect')) )
+
+            res.status(200).send( user ).end();
         })
         .catch((err: any) => {
             return res.status(500).json({ error: err, message: "Error al editar usuario" }).end();
@@ -285,7 +291,8 @@ export const getMyTrips = (req: Request & any, res: Response) => {
             populate: { path: 'addressB'}
         })
         .then((user: UserModel) => {
-            res.status(200).json(user.trips).end();
+            const resultTrips = user.trips.filter(trip => trip.status == 'Finalizado')
+            res.status(200).json(resultTrips).end();
         })
         .catch((err: any) => {
             res.status(500).json({ message: "Error al obtener los transportes del usuario", err: err }).end();
@@ -294,7 +301,7 @@ export const getMyTrips = (req: Request & any, res: Response) => {
 
 export const getUsersActiveSession = ( req: Request & any, res: Response) => {
     User
-        .find({ status: 'Libre' },{ company:1 , address:1, email: 1, firstName:1, lastName:1, status:1, image:1, vehicle:1 })
+        .find({ status: 'Libre' },{ company:1 , address:1, email: 1, firstName:1, lastName:1, status:1, image:1, vehicle:1, idSocket: 1 })
         .populate('company')
         .then((usersFind: UserModel[]) => {
             res.status(200).send(usersFind).end()

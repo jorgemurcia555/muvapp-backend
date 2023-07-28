@@ -21,8 +21,7 @@ import {
     getAllTrips,
     getTripsAgent,
     newTripAgent,
-    updateAssingAgent,
-    searchTrip
+    updateAssingAgent
 } from "../controllers/trip";
 
 const TripRouter = Router();
@@ -32,7 +31,6 @@ TripRouter.post("/newTripAgent", newTripAgent);
 TripRouter.post("/newTrip", newTrip);
 
 
-TripRouter.get("/searchTrip/:idUser", searchTrip)
 TripRouter.get("/list-trip-agent", getTripsAgent);
 TripRouter.get("/list-all", getAllTrips);
 TripRouter.get("/test-io", testIO);

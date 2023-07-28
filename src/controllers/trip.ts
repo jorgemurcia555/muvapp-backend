@@ -19,6 +19,7 @@ type Message = {
   body: string;
 };
 
+
 const handlePushTokens = (message: Message)  => {
   const notifications = [];
   for (const pushToken of savedPushTokens) {
@@ -608,7 +609,8 @@ export const newTripAgent = (req: Request & any, res: Response): void => {
 export const updateAssingAgent = (req: Request & any, res: Response) => {
 
     const { id } = req.params
-    const trip = {...req.body, status: 'Asignado'}
+    const user = new mongoose.Types.ObjectId(req.payload.user._id)
+    const trip = {...req.body, user, status: 'Asignado'}
 
     Trip
     .updateOne({ _id: id }, trip, { new: true })
@@ -617,12 +619,11 @@ export const updateAssingAgent = (req: Request & any, res: Response) => {
         const idTrip = new mongoose.Types.ObjectId(updateTrip._id)
         User.updateOne({_id: req.payload.user._id}, {status: 'Ocupado', $push: { trips: [idTrip]}})
         .then((userUpdate: UserModel) => {
-            res.status(200).send(updateTrip).end();
+            res.status(200).json({ updateTrip }).end();
         })
         .catch((err:Error) => {
-            res.status(500).send(err).end()
+            res.status(500).send(err).end();
         })
-        res.status(200).json( {updateTrip} ).end();
     })
     .catch(err => res.status(500).json({ error: err, message: "Error al actualizar tarea" }).end());
 
@@ -649,30 +650,5 @@ export const getTrip = (req: Request, res: Response) => {
         .catch((err: Error) => {
             res.status(500).json({ error: "server_error" }).end();
         });
-
-}
-
-export const searchTrip = (req: Request, res: Response) => {
-    const { idUser } = req.params
-    const id = new mongoose.Types.ObjectId(idUser)
-
-    Trip
-    .findOne({user: id, status: 'Asignado'})
-    .populate('addressA')
-    .populate('addressB')
-    .populate('user',['-preferences','-trips','-salt','-password','-updatedAt','-createdAt'])
-    .populate('company')
-    .populate('vehicle')
-    .populate({
-        path: "timeline",
-        populate: { path: "user" }
-    })
-    .exec()
-    .then( (tripFind: TripModel) => {
-        res.status(200).send(tripFind);
-    })
-    .catch( (error: Error) => {
-        res.status(500).send({result: false, error})
-    })
 
 }

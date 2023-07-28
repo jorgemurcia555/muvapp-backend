@@ -1,18 +1,20 @@
+import { User } from './../models/User';
 import { NextFunction } from "express";
 import { Server, Socket } from "socket.io";
 import { setIOConnection } from "../helpers/io";
-
 const jwt = require("jsonwebtoken");
 import server from "../server";
 const io: Server = new Server(server, {
     cors: {
-      origin: "*",
+      origin: true,
+      credentials: true,
+      methods: ['GET', 'POST']
     }
 });
 
-io.use((socket: any, next: NextFunction) => {
-    console.log("IN USE CONNECTION");
-    next();
+// io.use((socket: any, next: NextFunction) => {
+    // console.log("IN USE CONNECTION");
+    // next();
     /* if (socket.handshake.query && socket.handshake.query.token){
       jwt.verify(socket.handshake.query.token, process.env.SECRET_KEY, (err: any, decoded: any) => {
         if (err) return next(new Error("Authentication error"));
@@ -23,13 +25,54 @@ io.use((socket: any, next: NextFunction) => {
     else {
       next(new Error("Authentication error"));
     }     */
-});
+// });
 
 // * -----------------------------  E V E N T O S ---------------------------
 io.on("connection", (socket: Socket) => {
     console.log("\n-------------------------------------------------------");
     console.log("SOCKET IO SUCCESS CONNECTION SUCCESS: ", socket.id);
     console.log("--------------------------------------------------------\n");
+    
+    socket.emit('id-socket', socket.id)
+    
+    socket.on('request-trip', (data) => {
+        socket.broadcast.to(data.idSocket).emit('request-trip', data.idTrip)
+    })
+    
+    socket.on('accept-trip', (data) => {
+        socket.broadcast.to(data.idSocket).emit('accept-trip', data.result)
+    })
+
+    socket.on('confirm-up', (data) => {
+        socket.broadcast.to(data.id).emit('confirm-up',data.result)
+    })
+
+    socket.on('down-client', (data) => {
+        socket.broadcast.to(data.id).emit('down-client',data.result)
+    })
+
+    socket.on('request-trip', (data) => {
+        socket.broadcast.to(data.id).emit('request-trip',data.result)
+    })
+
+    socket.on('agent-trip', (data) => {
+        socket.broadcast.to(data.id).emit('agent-trip',data.result)
+    })
+
+    socket.on('post-trip', (data) => {
+        socket.broadcast.to(data.id).emit('post-trip',data.result)
+    })
+
+    socket.on("disconnect", (err: any) => {
+        console.log("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        console.log("SOCKET IO DISCONNECT CONNECTION SUCCESS: ", socket.id);
+        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
+
+        User.find({ idSocket: socket.id },{idSocket: ''})
+        .then( res => {
+            socket.broadcast.emit('user-disconnect' )
+        })
+    })
 });
 
 io.on("error", (err: any) => {
