@@ -609,7 +609,8 @@ export const newTripAgent = (req: Request & any, res: Response): void => {
 export const updateAssingAgent = (req: Request & any, res: Response) => {
 
     const { id } = req.params
-    const trip = {...req.body, status: 'Asignado'}
+    const user = new mongoose.Types.ObjectId(req.payload.user._id)
+    const trip = {...req.body, user, status: 'Asignado'}
 
     Trip
     .updateOne({ _id: id }, trip, { new: true })

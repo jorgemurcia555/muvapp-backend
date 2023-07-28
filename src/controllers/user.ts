@@ -291,7 +291,8 @@ export const getMyTrips = (req: Request & any, res: Response) => {
             populate: { path: 'addressB'}
         })
         .then((user: UserModel) => {
-            res.status(200).json(user.trips).end();
+            const resultTrips = user.trips.filter(trip => trip.status == 'Finalizado')
+            res.status(200).json(resultTrips).end();
         })
         .catch((err: any) => {
             res.status(500).json({ message: "Error al obtener los transportes del usuario", err: err }).end();
