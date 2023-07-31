@@ -290,6 +290,10 @@ export const getMyTrips = (req: Request & any, res: Response) => {
             path: 'trips',
             populate: { path: 'addressB'}
         })
+        .populate({
+            path: 'trips',
+            populate: { path: 'user'}
+        })
         .then((user: UserModel) => {
             const resultTrips = user.trips.filter(trip => trip.status == 'Finalizado')
             res.status(200).json(resultTrips).end();
