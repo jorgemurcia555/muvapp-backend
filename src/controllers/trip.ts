@@ -605,7 +605,7 @@ export const newTripAgent = (req: Request & any, res: Response): void => {
     .save()
     .then((newTrip: TripModel) => {
         const idTrip = new mongoose.Types.ObjectId(newTrip._id)
-        User.updateOne({_id: req.payload.user._id}, {$push: { trips: [idTrip]}})
+        User.updateOne({_id: req.payload.user._id}, { status: 'Ocupado', $push: { trips: [idTrip]}})
         .then((userUpdate: UserModel) => {
             res.status(200).send(newTrip).end();
         })
