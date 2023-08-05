@@ -21,15 +21,15 @@ import {
     getAllTrips,
     getTripsAgent,
     newTripAgent,
-    updateAssingAgent
+    updateAssingAgent,
+    addClient
 } from "../controllers/trip";
 
 const TripRouter = Router();
 
 TripRouter.post("/new", createTrip);
-TripRouter.post("/newTripAgent", newTripAgent);
-TripRouter.post("/newTrip", newTrip);
-
+TripRouter.post("/new-trip-agent", newTripAgent);
+TripRouter.post("/new-trip", newTrip);
 
 TripRouter.get("/list-trip-agent", getTripsAgent);
 TripRouter.get("/list-all", getAllTrips);
@@ -43,7 +43,8 @@ TripRouter.get("/list-per-status/:status", getTripByStatus);
 TripRouter.get("/count-per-status", getCoutByStatus);
 TripRouter.get("/:id", getTrip);
 
-TripRouter.put("/assingAgent/:id", updateAssingAgent)
+TripRouter.put("/assing-agent/:id", updateAssingAgent)
+TripRouter.put("/add-client", addClient)
 TripRouter.put("/expo-token", expoToken);
 TripRouter.put("/expo-message", tripMessage);
 

@@ -51,8 +51,8 @@ io.on("connection", (socket: Socket) => {
         socket.broadcast.to(data.id).emit('down-client',data.result)
     })
 
-    socket.on('request-trip', (data) => {
-        socket.broadcast.to(data.id).emit('request-trip',data.result)
+    socket.on('send-request-trip', (data) => {
+        socket.broadcast.to(data.id).emit('send-request-trip',data.result)
     })
 
     socket.on('agent-trip', (data) => {
@@ -61,6 +61,22 @@ io.on("connection", (socket: Socket) => {
 
     socket.on('post-trip', (data) => {
         socket.broadcast.to(data.id).emit('post-trip',data.result)
+    })
+
+    socket.on('run-trip', (id) => {
+        socket.broadcast.to(id).emit('run-trip')
+    })
+    
+    socket.on('join-trip', (data) => {
+        socket.broadcast.to(data.id).emit('join-trip',data.result)
+    })
+
+    socket.on('solution-one', (data) => {
+        socket.broadcast.to(data.id).emit('solution-one',data.result)
+    })
+
+    socket.on('solution-two', (data) => {
+        socket.broadcast.to(data.id).emit('solution-two',data.result)
     })
 
     socket.on("disconnect", (err: any) => {
