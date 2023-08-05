@@ -92,7 +92,7 @@ export const testIO = async (req: Request & any, res: Response): Promise<any> =>
 };
 
 export const createTrip = async (req: Request & any, res: Response): Promise<any> => {
-    const io = getIOConnection();
+    // const io = getIOConnection();
     const timeLine = {
         fulldate: new Date(),
         description: "Tarea creada",
@@ -113,7 +113,7 @@ export const createTrip = async (req: Request & any, res: Response): Promise<any
     trip
       .save()
       .then((trip: TripModel) => {
-        io.emit("updatedTrip", "success");
+        // io.emit("updatedTrip", "success");
           res.json(trip).end();
         })
       .catch((err: Error) => {
@@ -465,7 +465,7 @@ export const startTrip = (req: Request & any, res: Response): void => {
 
 export const finishTrip = (req: Request & any, res: Response): void => {
     // todo Agregar la direccion del momento en que se inicia la tarea.
-    const io = getIOConnection();
+    // const io = getIOConnection();
     const agent = req.payload.user;
     const tripId = req.params.id;
     const trip = req.body;
@@ -483,8 +483,8 @@ export const finishTrip = (req: Request & any, res: Response): void => {
         .exec()
         .then(async (resuls) => {
             await User.updateOne({ _id: trip.agents[0]._id }, { status: "Libre" }, {new: true}).exec();
-            io.emit("updatedTrip", "success");
-            io.emit("updatedAgent", "success");
+            // io.emit("updatedTrip", "success");
+            // io.emit("updatedAgent", "success");
             res.status(200).send(trip);
         })
         .catch((err) => res.status(500).send({message: "Error al finalizar tarea por agente", err}));
@@ -543,7 +543,7 @@ export const newTrip = (req: Request & any, res: Response): void => {
 
 export const getAllTrips = (req: Request & any, res: Response): void => {
     Trip
-        .find({status: 'Sin asignar'})
+        .find({ status: 'Sin asignar' })
         .populate('addressA')
         .populate('addressB')
         .populate({
@@ -562,29 +562,41 @@ export const getAllTrips = (req: Request & any, res: Response): void => {
 
 export const getTripsAgent = (req: Request & any, res: Response): void => {
     Trip
-        .find({status: 'Asignado'})
+        .find({ status: 'Asignado' })
         .populate('addressA')
         .populate('addressB')
         .populate('user')
-        .populate({
-            path: "timeline",
-            populate: { path: "user" }
-        })
         .exec()
         .then( (tripsResult: TripModel[]) => {
-            res.status(200).send(tripsResult).end();
+            const filterTrip = tripsResult.filter(trip => String(tripsResult[0].timeline[0].user) === String(tripsResult[0].user._id) && String(tripsResult[0].user._id) != req.payload.user._id)
+            res.status(200).send(filterTrip).end();
         })
         .catch( error => {
             res.status(500).send({error}).end();
         })
+        // .populate({
+        //     path: "timeline",
+        //     populate: { path: "user" }
+        // })
         
 }
 
 export const newTripAgent = (req: Request & any, res: Response): void => {
 
-    const company = req.payload.user.company;
+    const timeLine = {
+        fulldate: new Date(),
+        description: "Tarea creada",
+        status: "Creado",
+        user: req.payload.user._id
+    };
+
     const idUser = new mongoose.Types.ObjectId(req.payload.user._id)
-    const trip = new Trip(req.body);
+    
+    const preTrip = req.body;
+    preTrip["timeline"] = [timeLine];
+    const company = req.payload.user.company;
+    
+    const trip = new Trip(preTrip);
     trip.company = company;
     trip.status = "Asignado";
     trip.user = idUser
@@ -636,7 +648,7 @@ export const getTrip = (req: Request, res: Response) => {
         .findById(id, {code:0,createdAt:0,updatedAt:0})
         .populate('addressA')
         .populate('addressB')
-        .populate('user',['-preferences','-trips','-salt','-password','-updatedAt','-createdAt'])
+        .populate('user')
         .populate('company')
         .populate('vehicle')
         .populate({
@@ -650,5 +662,34 @@ export const getTrip = (req: Request, res: Response) => {
         .catch((err: Error) => {
             res.status(500).json({ error: "server_error" }).end();
         });
+
+}
+
+
+export const addClient = (req: Request & any, res: Response): void => {
+    const timeLine: Timeline = {
+        fulldate: new Date().toISOString(),
+        description: "Se unio al viaje",
+        status: "Actualizado",
+        user: req.payload.user._id
+    };
+
+    const { id, spots } = req.body
+    const idTrip = new mongoose.Types.ObjectId(id)
+
+    Trip
+    .updateOne({ _id: id }, { spots, $push: { timeline: timeLine } })
+    .exec()
+    .then((updateTrip: TripModel) => {
+        User.updateOne({_id: req.payload.user._id},{status: 'Ocupado', $push: { trips: [idTrip]}}, { new: true})
+        .then((userUpdate: UserModel) => {
+            res.status(200).send(updateTrip).end();
+        })
+        .catch((err:Error) => {
+            res.status(500).send(err).end()
+        })
+        res.status(200).json( updateTrip );
+    })
+    .catch(err => res.status(500).json({ error: err, message: "Error al actualizar tarea" }).end());
 
 }
