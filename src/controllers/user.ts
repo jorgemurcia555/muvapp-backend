@@ -295,7 +295,7 @@ export const getMyTrips = (req: Request & any, res: Response) => {
             populate: { path: 'user'}
         })
         .then((user: UserModel) => {
-            const resultTrips = user.trips.filter(trip => trip.status == 'Finalizado')
+            const resultTrips = user.trips.filter(trip => trip.status == 'Completado')
             res.status(200).json(resultTrips).end();
         })
         .catch((err: any) => {
