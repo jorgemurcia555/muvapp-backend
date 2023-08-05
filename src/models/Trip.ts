@@ -42,6 +42,7 @@ export type TripModel = mongoose.Document & {
   date: string;
   timeline: Timeline[];
   company: CompanyModel;
+  requestDrivers: boolean;
 };
 
 
@@ -53,6 +54,7 @@ const TripSchema = new mongoose.Schema<TripModel>({
   markers: [Array],
   spots: Number,
   price: Number,
+  requestDrivers: { type: Boolean, default: false},
   addressA: { type: Schema.Types.ObjectId, ref: "Address", required: [false, "Address is required for trip"] },
   addressB: { type: Schema.Types.ObjectId, ref: "Address", required: [false, "Address is required for trip"] },
   distance: Number,
